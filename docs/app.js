@@ -63,7 +63,7 @@ function displayMembers() {
     card.innerHTML = `
       <img src="${m.image || "placeholder.jpg"}" alt="${m.name}" />
       <h3>${m.name}</h3>
-      <p><strong>誕生日:</strong> ${m.birthday}</p>
+      <p><strong>誕生日（月日）:</strong> ${m.birthday}</p>
       <p><strong>デビュー日:</strong> ${m.debut}</p>
       <p><strong>身長:</strong> ${m.height}</p>
       <p><strong>ユニット:</strong> ${m.unit}</p>
@@ -85,7 +85,7 @@ registerForm.addEventListener("submit", (e) => {
   const formData = new FormData(registerForm);
 
   const unit =
-    formData.get("unitSelect") === "other"
+    formData.get("unitSelect") === "その他"
       ? formData.get("unitCustom")
       : formData.get("unitSelect");
 
