@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>ホロライブ図鑑</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>ホロライブ図鑑</h1>
+
+  <div class="controls">
+    <input type="text" id="searchInput" placeholder="キーワード検索">
+    <select id="unitFilter"></select>
+    <button id="openRegisterBtn">登録画面を開く</button>
+  </div>
+
+  <div id="memberGrid" class="grid"></div>
+
+  <div id="adminSection" style="display:none;">
+    <h2>新メンバー登録</h2>
+    <form id="registerForm">
+      <input type="text" name="name" placeholder="名前" required>
+      <input type="date" name="birthday" placeholder="誕生日" required>
+      <input type="date" name="debut" placeholder="デビュー日" required>
+      <input type="text" name="height" placeholder="身長" required>
+      <select name="unitSelect" id="unitSelect" required>
+        <option value="">ユニット選択</option>
+        <option value="ホロライブ">ホロライブ</option>
+        <option value="ホロスターズ">ホロスターズ</option>
+        <option value="DEV_IS">DEV_IS</option>
+        <option value="English">English</option>
+        <option value="ID">ID</option>
+        <option value="other">その他</option>
+      </select>
+      <input type="text" name="unitCustom" id="unitCustomInput" placeholder="ユニット名を入力" style="display:none;">
+      <input type="text" name="illustrator" placeholder="イラストレーター">
+      <input type="text" name="costumeDesigner" placeholder="新衣装デザイン">
+      <input type="text" name="fanName" placeholder="ファンネーム">
+      <input type="text" name="hashtag" placeholder="ハッシュタグ">
+      <input type="text" name="likes" placeholder="好きなもの">
+      <input type="text" name="greeting" placeholder="挨拶">
+      <input type="file" name="image" accept="image/*">
+      <button type="submit">登録</button>
+    </form>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

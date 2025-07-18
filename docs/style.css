@@ -1,0 +1,57 @@
+body {
+  font-family: sans-serif;
+  background: #e6f4f9;
+  padding: 20px;
+  color: #333;
+}
+
+h1 {
+  color: #2fa4dc;
+  text-align: center;
+}
+
+.controls {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.memberCard {
+  background: white;
+  border-radius: 10px;
+  padding: 10px;
+  box-shadow: 0 0 8px rgba(0,0,0,0.1);
+  transition: transform 0.2s;
+}
+
+.memberCard:hover {
+  transform: scale(1.03);
+}
+
+.memberCard img {
+  width: 100%;
+  border-radius: 10px;
+}
+
+form input, form select, form button {
+  display: block;
+  margin: 5px 0;
+  width: 100%;
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+form button {
+  background-color: #2fa4dc;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
