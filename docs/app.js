@@ -1,6 +1,7 @@
 const unitFilter = document.getElementById("unitFilter");
 const unitSelect = document.getElementById("unitSelect");
 const unitCustomInput = document.getElementById("unitCustomInput");
+const unitCustomLabel = document.getElementById("unitCustomLabel");
 const memberGrid = document.getElementById("memberGrid");
 const searchInput = document.getElementById("searchInput");
 const registerForm = document.getElementById("registerForm");
@@ -9,10 +10,12 @@ const openRegisterBtn = document.getElementById("openRegisterBtn");
 
 let members = [];
 
+// localStorageに保存
 function saveToLocal() {
   localStorage.setItem("holomembers", JSON.stringify(members));
 }
 
+// localStorageから読み込み
 function loadFromLocal() {
   const data = localStorage.getItem("holomembers");
   if (data) {
@@ -22,10 +25,15 @@ function loadFromLocal() {
   }
 }
 
+// ユニット選択肢をユニークなものにして絞り込み用にセット
 function populateUnitFilter() {
-  const uniqueUnits = [...new Set(members.map((m) => m.unit))];
+  // ここは手動でユニットリスト固定化もOK
+  const predefinedUnits = [
+    "0期生", "1期生", "2期生", "3期生", "4期生", "5期生",
+    "ホロライブゲーマーズ", "ホロスターズ", "ホロX", "English", "ID"
+  ];
   unitFilter.innerHTML = '<option value="">すべてのユニット</option>';
-  uniqueUnits.forEach((u) => {
+  predefinedUnits.forEach((u) => {
     const option = document.createElement("option");
     option.value = u;
     option.textContent = u;
@@ -33,6 +41,7 @@ function populateUnitFilter() {
   });
 }
 
+// メンバーをカード形式で表示
 function displayMembers() {
   memberGrid.innerHTML = "";
   const keyword = searchInput.value.toLowerCase();
@@ -41,9 +50,10 @@ function displayMembers() {
   const filtered = members.filter((m) => {
     return (
       (!selectedUnit || m.unit === selectedUnit) &&
-      (!keyword || Object.values(m).some((v) =>
-        typeof v === "string" && v.toLowerCase().includes(keyword)
-      ))
+      (!keyword ||
+        Object.values(m).some(
+          (v) => typeof v === "string" && v.toLowerCase().includes(keyword)
+        ))
     );
   });
 
@@ -62,19 +72,22 @@ function displayMembers() {
       <p><strong>ファン名:</strong> ${m.fanName}</p>
       <p><strong>タグ:</strong> ${m.hashtag}</p>
       <p><strong>好き:</strong> ${m.likes}</p>
-      <p><strong>挨拶:</strong> ${m.greeting}</p>
+      <p><strong>始まりの挨拶:</strong> ${m.greetingStart || ""}</p>
+      <p><strong>締めの挨拶:</strong> ${m.greetingEnd || ""}</p>
     `;
     memberGrid.appendChild(card);
   });
 }
 
+// 登録フォーム送信処理
 registerForm.addEventListener("submit", (e) => {
   e.preventDefault();
   const formData = new FormData(registerForm);
 
-  const unit = formData.get("unitSelect") === "other"
-    ? formData.get("unitCustom")
-    : formData.get("unitSelect");
+  const unit =
+    formData.get("unitSelect") === "other"
+      ? formData.get("unitCustom")
+      : formData.get("unitSelect");
 
   const imageFile = formData.get("image");
   const reader = new FileReader();
@@ -91,7 +104,8 @@ registerForm.addEventListener("submit", (e) => {
       fanName: formData.get("fanName"),
       hashtag: formData.get("hashtag"),
       likes: formData.get("likes"),
-      greeting: formData.get("greeting"),
+      greetingStart: formData.get("greetingStart"),
+      greetingEnd: formData.get("greetingEnd"),
       image: reader.result,
     };
     members.push(newMember);
@@ -109,16 +123,25 @@ registerForm.addEventListener("submit", (e) => {
   }
 });
 
+// ユニットが「その他」のときだけ自由入力欄を表示
 unitSelect.addEventListener("change", () => {
-  unitCustomInput.style.display = unitSelect.value === "other" ? "block" : "none";
+  if (unitSelect.value === "その他") {
+    unitCustomInput.style.display = "block";
+    unitCustomLabel.style.display = "block";
+  } else {
+    unitCustomInput.style.display = "none";
+    unitCustomLabel.style.display = "none";
+  }
 });
 
+// 検索や絞り込みで表示更新
 searchInput.addEventListener("input", displayMembers);
 unitFilter.addEventListener("change", displayMembers);
 
+// 登録画面表示のためのパスワード認証
 openRegisterBtn.addEventListener("click", () => {
   const input = prompt("管理者パスワードを入力してください");
-  const PASSWORD = "holoadmin2025"; // 🔒 パスワードを変更可能
+  const PASSWORD = "holoadmin2025"; // 必ず変更してください
   if (input === PASSWORD) {
     adminSection.style.display = "block";
   } else {
@@ -126,4 +149,5 @@ openRegisterBtn.addEventListener("click", () => {
   }
 });
 
+// ページ読み込み時にデータロード
 loadFromLocal();

@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>ホロライブ図鑑</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <h1>ホロライブ図鑑</h1>
 
   <div class="controls">
-    <input type="text" id="searchInput" placeholder="キーワード検索">
+    <input type="text" id="searchInput" placeholder="キーワード検索" />
     <select id="unitFilter"></select>
     <button id="openRegisterBtn">登録画面を開く</button>
   </div>
@@ -19,27 +19,62 @@
   <div id="adminSection" style="display:none;">
     <h2>新メンバー登録</h2>
     <form id="registerForm">
-      <input type="text" name="name" placeholder="名前" required>
-      <input type="date" name="birthday" placeholder="誕生日" required>
-      <input type="date" name="debut" placeholder="デビュー日" required>
-      <input type="text" name="height" placeholder="身長" required>
+      <label for="name">名前：</label>
+      <input type="text" name="name" id="name" placeholder="例：白上フブキ" required />
+
+      <label for="birthday">誕生日：</label>
+      <input type="date" name="birthday" id="birthday" required />
+
+      <label for="debut">デビュー日：</label>
+      <input type="date" name="debut" id="debut" required />
+
+      <label for="height">身長（cm）：</label>
+      <input type="text" name="height" id="height" placeholder="例：155" required />
+
+      <label for="unitSelect">ユニット：</label>
       <select name="unitSelect" id="unitSelect" required>
-        <option value="">ユニット選択</option>
-        <option value="ホロライブ">ホロライブ</option>
+        <option value="">選択してください</option>
+        <option value="0期生">0期生</option>
+        <option value="1期生">1期生</option>
+        <option value="2期生">2期生</option>
+        <option value="3期生">3期生</option>
+        <option value="4期生">4期生</option>
+        <option value="5期生">5期生</option>
+        <option value="ホロライブゲーマーズ">ホロライブゲーマーズ</option>
         <option value="ホロスターズ">ホロスターズ</option>
-        <option value="DEV_IS">DEV_IS</option>
+        <option value="ホロX">ホロX</option>
         <option value="English">English</option>
         <option value="ID">ID</option>
-        <option value="other">その他</option>
+        <option value="その他">その他</option>
       </select>
-      <input type="text" name="unitCustom" id="unitCustomInput" placeholder="ユニット名を入力" style="display:none;">
-      <input type="text" name="illustrator" placeholder="イラストレーター">
-      <input type="text" name="costumeDesigner" placeholder="新衣装デザイン">
-      <input type="text" name="fanName" placeholder="ファンネーム">
-      <input type="text" name="hashtag" placeholder="ハッシュタグ">
-      <input type="text" name="likes" placeholder="好きなもの">
-      <input type="text" name="greeting" placeholder="挨拶">
-      <input type="file" name="image" accept="image/*">
+
+      <label for="unitCustomInput" id="unitCustomLabel" style="display:none;">ユニット名（自由入力）：</label>
+      <input type="text" name="unitCustom" id="unitCustomInput" placeholder="新しいユニット名を入力" style="display:none;" />
+
+      <label for="illustrator">イラストレーター：</label>
+      <input type="text" name="illustrator" id="illustrator" placeholder="例：しぐれうい" />
+
+      <label for="costumeDesigner">新衣装デザイン：</label>
+      <input type="text" name="costumeDesigner" id="costumeDesigner" placeholder="例：三月八日" />
+
+      <label for="fanName">ファンネーム：</label>
+      <input type="text" name="fanName" id="fanName" placeholder="例：こんこんきつね" />
+
+      <label for="hashtag">ハッシュタグ：</label>
+      <input type="text" name="hashtag" id="hashtag" placeholder="例：#フブキch" />
+
+      <label for="likes">好きなもの：</label>
+      <input type="text" name="likes" id="likes" placeholder="例：ラーメン、ゲーム、白米" />
+
+      <label for="greetingStart">始まりの挨拶：</label>
+      <input type="text" name="greetingStart" id="greetingStart" placeholder="例：こんこんきーつね！" />
+
+      <label for="greetingEnd">締めの挨拶：</label>
+      <input type="text" name="greetingEnd" id="greetingEnd" placeholder="例：またね〜！" />
+
+      <label for="image">写真：</label>
+      <input type="file" name="image" id="image" accept="image/*" />
+
       <button type="submit">登録</button>
     </form>
   </div>
