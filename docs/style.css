@@ -10,48 +10,124 @@ h1 {
   text-align: center;
 }
 
-.controls {
+.nav-buttons {
   display: flex;
-  gap: 10px;
   justify-content: center;
+  gap: 10px;
   margin-bottom: 20px;
 }
 
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 16px;
+#registerSection, #viewSection {
+  max-width: 600px;
+  margin: 0 auto 40px;
 }
 
-.memberCard {
+form label {
+  display: block;
+  margin-bottom: 10px;
+}
+
+form input[type="text"],
+form input[type="password"],
+form input[type="date"],
+form select,
+form input[type="file"] {
+  width: 100%;
+  padding: 6px 8px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  margin-top: 4px;
+  box-sizing: border-box;
+}
+
+form button {
+  margin-top: 15px;
+  background-color: #2fa4dc;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+form button:hover {
+  background-color: #2488be;
+}
+
+.error {
+  color: red;
+  margin-top: 8px;
+}
+
+.member-card {
   background: white;
   border-radius: 10px;
   padding: 10px;
   box-shadow: 0 0 8px rgba(0,0,0,0.1);
   transition: transform 0.2s;
+  margin-bottom: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
-.memberCard:hover {
+.member-card:hover {
   transform: scale(1.03);
 }
 
-.memberCard img {
-  width: 100%;
+.member-card img {
+  max-width: 60px;
+  max-height: 60px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.member-name {
+  font-weight: bold;
+  font-size: 1.1em;
+}
+
+#preview {
+  max-width: 200px;
+  max-height: 200px;
+  margin-top: 10px;
   border-radius: 10px;
-}
-
-form input, form select, form button {
   display: block;
-  margin: 5px 0;
-  width: 100%;
-  padding: 8px;
-  border-radius: 4px;
-  border: 1px solid #ccc;
 }
 
-form button {
-  background-color: #2fa4dc;
-  color: white;
-  border: none;
+.modal {
+  position: fixed;
+  top:0; left:0; right:0; bottom:0;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 10px;
+  padding: 20px;
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  box-sizing: border-box;
+}
+
+.modal-content img {
+  max-width: 100%;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+
+.modal-content .close {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 25px;
+  font-weight: bold;
   cursor: pointer;
 }

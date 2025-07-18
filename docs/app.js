@@ -20,6 +20,9 @@ const unitFilter = document.getElementById("unitFilter");
 const unitSelect = document.getElementById("unit");
 const customUnit = document.getElementById("customUnit");
 
+const imageFileInput = document.getElementById("imageFile");
+const preview = document.getElementById("preview");
+
 let members = JSON.parse(localStorage.getItem("hololive_members")) || [];
 
 viewBtn.addEventListener("click", () => {
@@ -33,6 +36,7 @@ registerBtn.addEventListener("click", () => {
   viewSection.style.display = "none";
   passwordSection.style.display = "block";
   registerSection.style.display = "none";
+  clearForm();
 });
 
 confirmPasswordBtn.addEventListener("click", () => {
@@ -50,13 +54,32 @@ unitSelect.addEventListener("change", () => {
   customUnit.style.display = unitSelect.value === "その他" ? "block" : "none";
 });
 
+imageFileInput.addEventListener("change", () => {
+  const file = imageFileInput.files[0];
+  if (!file) {
+    preview.src = "";
+    preview.style.display = "none";
+    preview.dataset.base64 = "";
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    preview.src = e.target.result;
+    preview.style.display = "block";
+    preview.dataset.base64 = e.target.result;
+  };
+  reader.readAsDataURL(file);
+});
+
 memberForm.addEventListener("submit", (e) => {
   e.preventDefault();
+
   const unitValue = unitSelect.value === "その他" ? customUnit.value : unitSelect.value;
+  const imageData = preview.dataset.base64 || "";
 
   const member = {
     name: document.getElementById("name").value,
-    image: document.getElementById("image").value,
+    image: imageData,
     birthday: document.getElementById("birthday").value,
     debut: document.getElementById("debut").value,
     height: document.getElementById("height").value,
@@ -77,7 +100,7 @@ memberForm.addEventListener("submit", (e) => {
   }
 
   localStorage.setItem("hololive_members", JSON.stringify(members));
-  memberForm.reset();
+  clearForm();
   currentEditIndex = null;
   deleteBtn.style.display = "none";
   showMemberList();
@@ -87,7 +110,7 @@ deleteBtn.addEventListener("click", () => {
   if (currentEditIndex !== null && confirm("本当に削除しますか？")) {
     members.splice(currentEditIndex, 1);
     localStorage.setItem("hololive_members", JSON.stringify(members));
-    memberForm.reset();
+    clearForm();
     currentEditIndex = null;
     deleteBtn.style.display = "none";
     showMemberList();
@@ -107,11 +130,28 @@ function showMemberList() {
 function editMember(index) {
   const member = members[index];
   document.getElementById("name").value = member.name;
-  document.getElementById("image").value = member.image;
+  // 画像はbase64文字列をimg srcにセット
+  preview.src = member.image;
+  preview.style.display = member.image ? "block" : "none";
+  preview.dataset.base64 = member.image || "";
+
   document.getElementById("birthday").value = member.birthday;
   document.getElementById("debut").value = member.debut;
   document.getElementById("height").value = member.height;
-  document.getElementById("unit").value = member.unit;
+
+  // ユニット選択は「その他」の場合テキスト入力も表示
+  if (
+    ["0期生","1期生","2期生","3期生","4期生","5期生","6期生","ホロライブEN","ホロライブID"].includes(member.unit)
+  ) {
+    unitSelect.value = member.unit;
+    customUnit.style.display = "none";
+    customUnit.value = "";
+  } else {
+    unitSelect.value = "その他";
+    customUnit.style.display = "block";
+    customUnit.value = member.unit || "";
+  }
+
   document.getElementById("illustrator").value = member.illustrator;
   document.getElementById("designer").value = member.designer;
   document.getElementById("fanName").value = member.fanName;
@@ -122,6 +162,16 @@ function editMember(index) {
 
   currentEditIndex = index;
   deleteBtn.style.display = "inline-block";
+}
+
+function clearForm() {
+  memberForm.reset();
+  preview.src = "";
+  preview.style.display = "none";
+  preview.dataset.base64 = "";
+  unitSelect.value = "";
+  customUnit.style.display = "none";
+  customUnit.value = "";
 }
 
 function displayMembers() {
@@ -140,7 +190,10 @@ function displayMembers() {
   filtered.forEach(member => {
     const card = document.createElement("div");
     card.className = "member-card";
-    card.innerHTML = `<p class="member-name">${member.name}</p>`;
+    card.innerHTML = `
+      <p class="member-name">${member.name}</p>
+      <img src="${member.image}" alt="${member.name}" />
+    `;
     card.addEventListener("click", () => showDetail(member));
     membersContainer.appendChild(card);
   });
@@ -165,7 +218,8 @@ function showDetail(member) {
       <p>好きなもの: ${member.likes}</p>
       <p>挨拶（始まり）: ${member.greetStart}</p>
       <p>挨拶（締め）: ${member.greetEnd}</p>
-    </div>`;
+    </div>
+  `;
   document.body.appendChild(modal);
   modal.querySelector(".close").addEventListener("click", () => modal.remove());
 }

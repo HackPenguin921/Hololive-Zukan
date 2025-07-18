@@ -20,11 +20,17 @@
       <p id="passwordError" class="error"></p>
     </div>
 
-    <div id="registerSection" style="display: none">
+    <div id="registerSection" style="display:none;">
       <form id="memberForm">
         <input type="hidden" id="editIndex" />
         <label>名前:<input type="text" id="name" required /></label>
-        <label>画像URL:<input type="text" id="image" placeholder="画像のURL" /></label>
+
+        <!-- 画像URL入力は廃止し、ファイル選択に変更 -->
+        <label>画像ファイル:
+          <input type="file" id="imageFile" accept="image/*" />
+        </label>
+        <img id="preview" src="" style="max-width: 200px; display:none; margin-top:5px; border-radius:10px;" alt="プレビュー" />
+
         <label>誕生日（月日）:<input type="text" id="birthday" placeholder="MM-DD" required /></label>
         <label>デビュー日:<input type="date" id="debut" required /></label>
         <label>身長:<input type="text" id="height" /></label>
@@ -52,12 +58,12 @@
         <label>挨拶（始まり）:<input type="text" id="greetStart" /></label>
         <label>挨拶（締め）:<input type="text" id="greetEnd" /></label>
         <button type="submit">保存</button>
-        <button type="button" id="deleteBtn" style="display: none">削除</button>
+        <button type="button" id="deleteBtn" style="display:none;">削除</button>
       </form>
       <div id="memberList"></div>
     </div>
 
-    <div id="viewSection" style="display: none">
+    <div id="viewSection" style="display:none;">
       <input type="text" id="searchInput" placeholder="キーワードで検索" />
       <select id="unitFilter">
         <option value="">ユニットで絞り込み</option>
