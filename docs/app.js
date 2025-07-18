@@ -1,129 +1,174 @@
-const unitFilter = document.getElementById("unitFilter");
+const PASSWORD = "holoadmin2025";
+let currentEditIndex = null;
+
+const viewBtn = document.getElementById("viewBtn");
+const registerBtn = document.getElementById("registerBtn");
+const passwordSection = document.getElementById("passwordSection");
+const passwordInput = document.getElementById("adminPassword");
+const confirmPasswordBtn = document.getElementById("confirmPasswordBtn");
+const passwordError = document.getElementById("passwordError");
+
+const registerSection = document.getElementById("registerSection");
+const viewSection = document.getElementById("viewSection");
+const memberForm = document.getElementById("memberForm");
 const memberList = document.getElementById("memberList");
-const detailModal = document.getElementById("detailModal");
-const detailContent = document.getElementById("detailContent");
-const closeModalBtn = document.getElementById("closeModalBtn");
-const deleteMemberBtn = document.getElementById("deleteMemberBtn");
+const membersContainer = document.getElementById("members");
+const deleteBtn = document.getElementById("deleteBtn");
+
 const searchInput = document.getElementById("searchInput");
-const openRegisterBtn = document.getElementById("openRegisterBtn");
-const adminSection = document.getElementById("adminSection");
+const unitFilter = document.getElementById("unitFilter");
+const unitSelect = document.getElementById("unit");
+const customUnit = document.getElementById("customUnit");
 
-let members = [];
-let currentMemberIndex = null;
+let members = JSON.parse(localStorage.getItem("hololive_members")) || [];
 
-// 事前決められたユニットリスト（登録フォーム用など）
-const predefinedUnits = [
-  "0期生", "1期生", "2期生", "3期生", "4期生", "5期生",
-  "ホロライブゲーマーズ", "ホロスターズ", "ホロX", "English", "ID"
-];
-
-// localStorageに保存
-function saveToLocal() {
-  localStorage.setItem("holomembers", JSON.stringify(members));
-}
-
-// localStorageから読み込み
-function loadFromLocal() {
-  const data = localStorage.getItem("holomembers");
-  if (data) {
-    members = JSON.parse(data);
-  }
+viewBtn.addEventListener("click", () => {
+  registerSection.style.display = "none";
+  passwordSection.style.display = "none";
+  viewSection.style.display = "block";
   displayMembers();
-  populateUnitFilter();
-}
+});
 
-// ユニットフィルターの選択肢セット
-function populateUnitFilter() {
-  unitFilter.innerHTML = '<option value="">すべてのユニット</option>';
-  predefinedUnits.forEach((u) => {
-    const option = document.createElement("option");
-    option.value = u;
-    option.textContent = u;
-    unitFilter.appendChild(option);
+registerBtn.addEventListener("click", () => {
+  viewSection.style.display = "none";
+  passwordSection.style.display = "block";
+  registerSection.style.display = "none";
+});
+
+confirmPasswordBtn.addEventListener("click", () => {
+  if (passwordInput.value === PASSWORD) {
+    passwordSection.style.display = "none";
+    registerSection.style.display = "block";
+    passwordError.textContent = "";
+    showMemberList();
+  } else {
+    passwordError.textContent = "パスワードが間違っています。";
+  }
+});
+
+unitSelect.addEventListener("change", () => {
+  customUnit.style.display = unitSelect.value === "その他" ? "block" : "none";
+});
+
+memberForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  const unitValue = unitSelect.value === "その他" ? customUnit.value : unitSelect.value;
+
+  const member = {
+    name: document.getElementById("name").value,
+    image: document.getElementById("image").value,
+    birthday: document.getElementById("birthday").value,
+    debut: document.getElementById("debut").value,
+    height: document.getElementById("height").value,
+    unit: unitValue,
+    illustrator: document.getElementById("illustrator").value,
+    designer: document.getElementById("designer").value,
+    fanName: document.getElementById("fanName").value,
+    hashtag: document.getElementById("hashtag").value,
+    likes: document.getElementById("likes").value,
+    greetStart: document.getElementById("greetStart").value,
+    greetEnd: document.getElementById("greetEnd").value,
+  };
+
+  if (currentEditIndex !== null) {
+    members[currentEditIndex] = member;
+  } else {
+    members.push(member);
+  }
+
+  localStorage.setItem("hololive_members", JSON.stringify(members));
+  memberForm.reset();
+  currentEditIndex = null;
+  deleteBtn.style.display = "none";
+  showMemberList();
+});
+
+deleteBtn.addEventListener("click", () => {
+  if (currentEditIndex !== null && confirm("本当に削除しますか？")) {
+    members.splice(currentEditIndex, 1);
+    localStorage.setItem("hololive_members", JSON.stringify(members));
+    memberForm.reset();
+    currentEditIndex = null;
+    deleteBtn.style.display = "none";
+    showMemberList();
+  }
+});
+
+function showMemberList() {
+  memberList.innerHTML = "";
+  members.forEach((member, index) => {
+    const btn = document.createElement("button");
+    btn.textContent = member.name;
+    btn.addEventListener("click", () => editMember(index));
+    memberList.appendChild(btn);
   });
 }
 
-// メンバー名前一覧表示
+function editMember(index) {
+  const member = members[index];
+  document.getElementById("name").value = member.name;
+  document.getElementById("image").value = member.image;
+  document.getElementById("birthday").value = member.birthday;
+  document.getElementById("debut").value = member.debut;
+  document.getElementById("height").value = member.height;
+  document.getElementById("unit").value = member.unit;
+  document.getElementById("illustrator").value = member.illustrator;
+  document.getElementById("designer").value = member.designer;
+  document.getElementById("fanName").value = member.fanName;
+  document.getElementById("hashtag").value = member.hashtag;
+  document.getElementById("likes").value = member.likes;
+  document.getElementById("greetStart").value = member.greetStart;
+  document.getElementById("greetEnd").value = member.greetEnd;
+
+  currentEditIndex = index;
+  deleteBtn.style.display = "inline-block";
+}
+
 function displayMembers() {
-  memberList.innerHTML = "";
   const keyword = searchInput.value.toLowerCase();
   const selectedUnit = unitFilter.value;
+  membersContainer.innerHTML = "";
 
   const filtered = members.filter(m => {
-    return (!selectedUnit || m.unit === selectedUnit) &&
-      (!keyword || Object.values(m).some(v => typeof v === "string" && v.toLowerCase().includes(keyword)));
+    const matchKeyword = Object.values(m).some(val =>
+      String(val).toLowerCase().includes(keyword)
+    );
+    const matchUnit = !selectedUnit || m.unit === selectedUnit;
+    return matchKeyword && matchUnit;
   });
 
-  if(filtered.length === 0) {
-    memberList.innerHTML = '<p style="text-align:center; color:#666;">該当するメンバーがいません</p>';
-    return;
-  }
-
-  filtered.forEach((m) => {
-    const div = document.createElement("div");
-    div.className = "memberNameItem";
-    div.textContent = m.name;
-    div.addEventListener("click", () => {
-      currentMemberIndex = members.indexOf(m);
-      showMemberDetail(m);
-    });
-    memberList.appendChild(div);
+  filtered.forEach(member => {
+    const card = document.createElement("div");
+    card.className = "member-card";
+    card.innerHTML = `<p class="member-name">${member.name}</p>`;
+    card.addEventListener("click", () => showDetail(member));
+    membersContainer.appendChild(card);
   });
 }
 
-// メンバー詳細表示
-function showMemberDetail(member) {
-  detailContent.innerHTML = `
-    <img src="${member.image || "placeholder.jpg"}" alt="${member.name}" />
-    <h2>${member.name}</h2>
-    <p><strong>誕生日（月日）:</strong> ${member.birthday}</p>
-    <p><strong>デビュー日:</strong> ${member.debut}</p>
-    <p><strong>身長:</strong> ${member.height} cm</p>
-    <p><strong>ユニット:</strong> ${member.unit}</p>
-    <p><strong>イラスト:</strong> ${member.illustrator}</p>
-    <p><strong>衣装:</strong> ${member.costumeDesigner}</p>
-    <p><strong>ファン名:</strong> ${member.fanName}</p>
-    <p><strong>タグ:</strong> ${member.hashtag}</p>
-    <p><strong>好き:</strong> ${member.likes}</p>
-    <p><strong>始まりの挨拶:</strong> ${member.greetingStart || ""}</p>
-    <p><strong>締めの挨拶:</strong> ${member.greetingEnd || ""}</p>
-  `;
-  detailModal.style.display = "flex";
+function showDetail(member) {
+  const modal = document.createElement("div");
+  modal.className = "modal";
+  modal.innerHTML = `
+    <div class="modal-content">
+      <span class="close">×</span>
+      <h2>${member.name}</h2>
+      <img src="${member.image}" alt="${member.name}" />
+      <p>誕生日: ${member.birthday}</p>
+      <p>デビュー日: ${member.debut}</p>
+      <p>身長: ${member.height}</p>
+      <p>ユニット: ${member.unit}</p>
+      <p>イラストレーター: ${member.illustrator}</p>
+      <p>新衣装デザイン: ${member.designer}</p>
+      <p>ファンネーム: ${member.fanName}</p>
+      <p>ハッシュタグ: ${member.hashtag}</p>
+      <p>好きなもの: ${member.likes}</p>
+      <p>挨拶（始まり）: ${member.greetStart}</p>
+      <p>挨拶（締め）: ${member.greetEnd}</p>
+    </div>`;
+  document.body.appendChild(modal);
+  modal.querySelector(".close").addEventListener("click", () => modal.remove());
 }
 
-// モーダル閉じる
-closeModalBtn.addEventListener("click", () => {
-  detailModal.style.display = "none";
-  currentMemberIndex = null;
-});
-
-// メンバー削除
-deleteMemberBtn.addEventListener("click", () => {
-  if (currentMemberIndex === null) return;
-
-  if (confirm("本当にこのメンバーを削除しますか？")) {
-    members.splice(currentMemberIndex, 1);
-    saveToLocal();
-    displayMembers();
-    detailModal.style.display = "none";
-    currentMemberIndex = null;
-  }
-});
-
-// 検索やユニットフィルター連動
 searchInput.addEventListener("input", displayMembers);
 unitFilter.addEventListener("change", displayMembers);
-
-// 管理者用登録画面ボタン（パスワード認証）
-openRegisterBtn.addEventListener("click", () => {
-  const input = prompt("管理者パスワードを入力してください");
-  const PASSWORD = "holoadmin2025"; // 適宜変更してください
-  if (input === PASSWORD) {
-    adminSection.style.display = "block";
-  } else {
-    alert("パスワードが違います。登録画面は表示されません。");
-  }
-});
-
-// 初期ロード
-loadFromLocal();

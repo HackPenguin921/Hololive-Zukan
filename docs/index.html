@@ -2,151 +2,78 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ホロライブ図鑑</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #e6f0ff;
-      color: #333;
-      margin: 20px;
-    }
-    h1 {
-      color: #3399ff;
-      text-align: center;
-    }
-    .controls {
-      text-align: center;
-      margin-bottom: 15px;
-    }
-    #searchInput {
-      padding: 6px;
-      width: 200px;
-      margin-right: 10px;
-      border-radius: 4px;
-      border: 1px solid #ccc;
-    }
-    #unitFilter {
-      padding: 6px;
-      border-radius: 4px;
-      border: 1px solid #ccc;
-      margin-right: 10px;
-    }
-    #openRegisterBtn {
-      padding: 6px 12px;
-      border-radius: 4px;
-      border: none;
-      background-color: #3399ff;
-      color: white;
-      cursor: pointer;
-    }
-    #openRegisterBtn:hover {
-      background-color: #267acc;
-    }
-
-    #memberList {
-      max-width: 400px;
-      margin: 0 auto;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      background: white;
-      box-shadow: 0 0 5px rgba(0,0,0,0.1);
-      overflow-y: auto;
-      max-height: 70vh;
-    }
-    .memberNameItem {
-      cursor: pointer;
-      padding: 10px 15px;
-      border-bottom: 1px solid #eee;
-      transition: background-color 0.2s;
-    }
-    .memberNameItem:hover {
-      background-color: #cce5ff;
-    }
-
-    /* モーダル */
-    #detailModal {
-      display: none;
-      position: fixed;
-      top: 0; left: 0; right:0; bottom:0;
-      background: rgba(0,0,0,0.6);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 10000;
-    }
-    #detailModalContent {
-      background: white;
-      padding: 20px 30px 30px;
-      max-width: 420px;
-      max-height: 80vh;
-      overflow-y: auto;
-      border-radius: 10px;
-      position: relative;
-      box-shadow: 0 0 15px rgba(0,0,0,0.3);
-    }
-    #closeModalBtn {
-      position: absolute;
-      top: 10px;
-      right: 15px;
-      font-size: 28px;
-      font-weight: bold;
-      border: none;
-      background: none;
-      cursor: pointer;
-      color: #555;
-      transition: color 0.2s;
-    }
-    #closeModalBtn:hover {
-      color: #3399ff;
-    }
-    #detailModalContent img {
-      max-width: 100%;
-      border-radius: 8px;
-      margin-bottom: 10px;
-    }
-    #deleteMemberBtn {
-      background:#e55353;
-      color:white;
-      border:none;
-      padding: 10px 15px;
-      cursor:pointer;
-      border-radius: 6px;
-      margin-top: 15px;
-      width: 100%;
-      font-weight: bold;
-      transition: background-color 0.3s;
-    }
-    #deleteMemberBtn:hover {
-      background:#b32b2b;
-    }
-
-    /* 登録フォームは省略可能、必要なら別途 */
-  </style>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h1>ホロライブ図鑑</h1>
+  <div id="app">
+    <h1>ホロライブ図鑑</h1>
+    <div class="nav-buttons">
+      <button id="viewBtn">図鑑を見る</button>
+      <button id="registerBtn">登録する</button>
+    </div>
 
-  <div class="controls">
-    <input type="text" id="searchInput" placeholder="キーワード検索" />
-    <select id="unitFilter"></select>
-    <button id="openRegisterBtn">登録画面を開く</button>
-  </div>
+    <div id="passwordSection" style="display:none;">
+      <input type="password" id="adminPassword" placeholder="管理者パスワード" />
+      <button id="confirmPasswordBtn">認証</button>
+      <p id="passwordError" class="error"></p>
+    </div>
 
-  <div id="memberList"></div>
+    <div id="registerSection" style="display: none">
+      <form id="memberForm">
+        <input type="hidden" id="editIndex" />
+        <label>名前:<input type="text" id="name" required /></label>
+        <label>画像URL:<input type="text" id="image" placeholder="画像のURL" /></label>
+        <label>誕生日（月日）:<input type="text" id="birthday" placeholder="MM-DD" required /></label>
+        <label>デビュー日:<input type="date" id="debut" required /></label>
+        <label>身長:<input type="text" id="height" /></label>
+        <label>ユニット:
+          <select id="unit">
+            <option value="">選択してください</option>
+            <option value="0期生">0期生</option>
+            <option value="1期生">1期生</option>
+            <option value="2期生">2期生</option>
+            <option value="3期生">3期生</option>
+            <option value="4期生">4期生</option>
+            <option value="5期生">5期生</option>
+            <option value="6期生">6期生（秘密結社holoX）</option>
+            <option value="ホロライブEN">ホロライブEN</option>
+            <option value="ホロライブID">ホロライブID</option>
+            <option value="その他">その他</option>
+          </select>
+          <input type="text" id="customUnit" placeholder="その他の場合、入力" style="display:none;" />
+        </label>
+        <label>イラストレーター:<input type="text" id="illustrator" /></label>
+        <label>新衣装デザイン:<input type="text" id="designer" /></label>
+        <label>ファンネーム:<input type="text" id="fanName" /></label>
+        <label>ハッシュタグ:<input type="text" id="hashtag" /></label>
+        <label>好きなもの:<input type="text" id="likes" /></label>
+        <label>挨拶（始まり）:<input type="text" id="greetStart" /></label>
+        <label>挨拶（締め）:<input type="text" id="greetEnd" /></label>
+        <button type="submit">保存</button>
+        <button type="button" id="deleteBtn" style="display: none">削除</button>
+      </form>
+      <div id="memberList"></div>
+    </div>
 
-  <!-- 詳細モーダル -->
-  <div id="detailModal">
-    <div id="detailModalContent">
-      <button id="closeModalBtn">&times;</button>
-      <div id="detailContent"></div>
-      <button id="deleteMemberBtn">削除する</button>
+    <div id="viewSection" style="display: none">
+      <input type="text" id="searchInput" placeholder="キーワードで検索" />
+      <select id="unitFilter">
+        <option value="">ユニットで絞り込み</option>
+        <option value="0期生">0期生</option>
+        <option value="1期生">1期生</option>
+        <option value="2期生">2期生</option>
+        <option value="3期生">3期生</option>
+        <option value="4期生">4期生</option>
+        <option value="5期生">5期生</option>
+        <option value="6期生">6期生（秘密結社holoX）</option>
+        <option value="ホロライブEN">ホロライブEN</option>
+        <option value="ホロライブID">ホロライブID</option>
+      </select>
+      <div id="members"></div>
     </div>
   </div>
-
-  <div id="adminSection" style="display:none;">
-    <!-- 登録フォームは省略。前のコードのフォームをここに入れてください -->
-  </div>
-
   <script src="app.js"></script>
 </body>
 </html>
